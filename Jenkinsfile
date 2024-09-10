@@ -13,7 +13,7 @@ pipeline {
             steps {
                 script {
                     // Assuming you have a TCL script for compilation
-                    sh 'vsim -c -do "do compile.tcl; exit"'
+                    sh 'vsim -c -do "do scripts/compile.tcl; exit"'
                 }
             }
         }
@@ -22,7 +22,7 @@ pipeline {
             steps {
                 script {
                     // Running testbenches using TCL script
-                    sh 'vsim -c -do "do run_testbenches.tcl; exit"'
+                    sh 'vsim -c -do "do scripts/run_testbenches.tcl; exit"'
                 }
             }
         }
