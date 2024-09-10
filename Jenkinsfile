@@ -1,6 +1,10 @@
 pipeline {
     agent any
     
+    environment {
+        MODELSIM_PATH = 'C:\\altera\\91\\modelsim_ae\\win32aloem'
+    }
+
     stages {
         stage('Checkout') {
             steps {
@@ -13,8 +17,11 @@ pipeline {
             steps {
                 dir('scripts') {
                     script {
-                        // Assuming you have a TCL script for compilation
-                        sh 'vsim -c -do "do compile.tcl; exit"'
+                        // Add ModelSim path to system PATH
+                        withEnv(["PATH+MODELSIM=${env.MODELSIM_PATH}"]) {
+                            // Run compile.tcl using ModelSim's vsim
+                            bat '"vsim" -c -do "do compile.tcl; exit"'
+                        }
                     }
                 }
             }
@@ -24,8 +31,11 @@ pipeline {
             steps {
                 dir('scripts') {
                     script {
-                        // Running testbenches using TCL script
-                        sh 'vsim -c -do "do run_testbenches.tcl; exit"'
+                        // Add ModelSim path to system PATH
+                        withEnv(["PATH+MODELSIM=${env.MODELSIM_PATH}"]) {
+                            // Run testbenches using ModelSim's vsim
+                            bat '"vsim" -c -do "do run_testbenches.tcl; exit"'
+                        }
                     }
                 }
             }
