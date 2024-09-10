@@ -7,7 +7,7 @@ entity module3 is
     Port ( A : in  STD_LOGIC_VECTOR (3 downto 0);
            B : in  STD_LOGIC_VECTOR (3 downto 0);
            SUM : out  STD_LOGIC_VECTOR (3 downto 0));
-end module2;
+end module3;
 
 architecture Behavioral of module2 is
 begin
