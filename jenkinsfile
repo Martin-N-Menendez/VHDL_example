@@ -5,7 +5,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 // Assuming you're using Git
-                git branch: 'main', url: 'https://your-repo-url.git'
+                git branch: 'main', url: 'https://github.com/Martin-N-Menendez/VHDL_example.git'
             }
         }
         
