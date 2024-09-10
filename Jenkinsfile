@@ -2,7 +2,7 @@ pipeline {
     agent any
     
     environment {
-        MODELSIM_PATH = 'C:\\altera\\91\\modelsim_ae\\win32aloem'
+        MODELSIM_PATH = 'C:\\intelFPGA\\18.1\\modelsim_ase\\win32aloem'
     }
 
     stages {
