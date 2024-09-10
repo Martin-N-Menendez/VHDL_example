@@ -11,18 +11,22 @@ pipeline {
         
         stage('Compile VHDL Files') {
             steps {
-                script {
-                    // Assuming you have a TCL script for compilation
-                    sh 'vsim -c -do "do scripts/compile.tcl; exit"'
+                dir('scripts') {
+                    script {
+                        // Assuming you have a TCL script for compilation
+                        sh 'vsim -c -do "do compile.tcl; exit"'
+                    }
                 }
             }
         }
 
         stage('Run Testbenches') {
             steps {
-                script {
-                    // Running testbenches using TCL script
-                    sh 'vsim -c -do "do scripts/run_testbenches.tcl; exit"'
+                dir('scripts') {
+                    script {
+                        // Running testbenches using TCL script
+                        sh 'vsim -c -do "do run_testbenches.tcl; exit"'
+                    }
                 }
             }
         }
