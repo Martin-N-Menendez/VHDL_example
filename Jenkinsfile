@@ -82,27 +82,27 @@ pipeline {
             }
         }
 
-         stage('Publish Results') {
+        stage('Convert Results to XML') {
             steps {
                 script {
-                    // Check for XML results
-                    def resultFiles = sh(returnStdout: true, script: 'dir /s /b results\\*.xml').trim()
-                    if (resultFiles) {
-                        archiveArtifacts artifacts: 'results/*.xml', allowEmptyArchive: true
-                        junit 'results/*.xml'
-                    } else {
-                        echo 'No test result files found. Check if testbenches are generating XML results.'
-                    }
+                    bat "python convert_to_junit_xml.py run_testbench_result.log ${RESULTS_PATH}\\test_results.xml"
                 }
             }
         }
+
+        stage('Publish Results') {
+            steps {
+                junit '**/results/test_results.xml'
+            }
+        }
     }
+
     post {
         always {
-            archiveArtifacts artifacts: '**/test_results/*.xml', allowEmptyArchive: true
             archiveArtifacts artifacts: 'source_result.log', allowEmptyArchive: true
             archiveArtifacts artifacts: 'testbench_result.log', allowEmptyArchive: true
             archiveArtifacts artifacts: 'run_testbench_result.log', allowEmptyArchive: true
+            archiveArtifacts artifacts: 'results/test_results.xml', allowEmptyArchive: true
         }
     }
 }
