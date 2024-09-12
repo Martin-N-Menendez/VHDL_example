@@ -29,7 +29,7 @@ pipeline {
                 }
             }
         }
-
+        
         stage('Compile VHDL Files') {
             steps {
                 script {
@@ -43,6 +43,24 @@ pipeline {
             }
         }
 
+        stage('Generate Source Makefile') {
+            steps {
+                script {
+                    // Generate makefile for source files
+                    bat "${MODELSIM_PATH}\\vmake -work work > source.vmake"
+                }
+            }
+        }
+
+        stage('Compile Source with Makefile') {
+            steps {
+                script {
+                    // Compile source files using the generated makefile
+                    bat "make -f source.vmake"
+                }
+            }
+        }
+        
         stage('Compile Testbenches') {
             steps {
                 script {
@@ -52,6 +70,24 @@ pipeline {
                         ${MODELSIM_PATH}\\vcom -2008 "%%f" || exit /b
                     )
                     """
+                }
+            }
+        }
+
+        stage('Generate Testbench Makefile') {
+            steps {
+                script {
+                    // Generate makefile for testbenches
+                    bat "${MODELSIM_PATH}\\vmake -work work > testbench.vmake"
+                }
+            }
+        }
+
+        stage('Compile Testbenches with Makefile') {
+            steps {
+                script {
+                    // Compile testbenches using the generated makefile
+                    bat "make -f testbench.vmake"
                 }
             }
         }
