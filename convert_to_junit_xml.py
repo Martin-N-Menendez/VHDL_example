@@ -24,14 +24,20 @@ def parse_log(log_file):
 def generate_junit_xml(test_cases, output_file):
     testsuite = ET.Element('testsuite', name='TestSuite', tests=str(len(test_cases)))
     for name, errors, warnings in test_cases:
-        testcase = ET.SubElement(testsuite, 'testcase', classname=name, name=name)
+        # Split the testbench name and convert to MODULE.TEST format
+        if "_" in name:
+            module_name, testbench_name = name.split("_", 1)
+            classname = f"{module_name}.{testbench_name}"
+        else:
+            classname = name  # If the name doesn't match the format, leave it unchanged
+        testcase = ET.SubElement(testsuite, 'testcase', classname=classname, name=name)
         if errors > 0:
             ET.SubElement(testcase, 'error', message=f'{errors} errors', type="Error")
         if warnings > 0:
             ET.SubElement(testcase, 'failure', message=f'{warnings} warnings', type="Warning")
     tree = ET.ElementTree(testsuite)
     tree.write(output_file, encoding='utf-8', xml_declaration=True)
-
+    
 if __name__ == '__main__':
     log_file = 'run_testbench_result.log'
     output_file = 'test_results.xml'
