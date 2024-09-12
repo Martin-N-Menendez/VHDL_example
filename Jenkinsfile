@@ -3,8 +3,6 @@ pipeline {
 
     environment {
         MODELSIM_PATH = 'C:\\intelFPGA\\18.1\\modelsim_ase\\win32aloem'
-        SOURCES_PATH = 'C:\\ProgramData\\Jenkins\\.jenkins\\workspace\\Testing\\sources'
-        TESTBENCHES_PATH = 'C:\\ProgramData\\Jenkins\\.jenkins\\workspace\\Testing\\testbenches'
     }
 
     stages {
@@ -29,65 +27,29 @@ pipeline {
                 }
             }
         }
-        
-        stage('Compile VHDL Files') {
+
+        stage('Compile Sources') {
             steps {
                 script {
-                    // Compile all VHDL files in the sources directory
+                    // Compile all source files without changing directories
                     bat """
-                    for %%f in (${SOURCES_PATH}\\*.vhd) do (
-                        ${MODELSIM_PATH}\\vcom -2008 "%%f" || exit /b
+                    for %%f in (sources/*.vhd) do (
+                        ${MODELSIM_PATH}\\vcom -2008 %%f || exit /b
                     )
                     """
                 }
             }
         }
 
-        stage('Generate Source Makefile') {
-            steps {
-                script {
-                    // Generate makefile for source files
-                    bat "${MODELSIM_PATH}\\vmake -work work > source.vmake"
-                }
-            }
-        }
-
-        stage('Compile Source with Makefile') {
-            steps {
-                script {
-                    // Compile source files using the generated makefile
-                    bat "make -f source.vmake"
-                }
-            }
-        }
-        
         stage('Compile Testbenches') {
             steps {
                 script {
-                    // Compile all testbenches in the testbenches directory
+                    // Compile all testbenches without changing directories
                     bat """
-                    for %%f in (${TESTBENCHES_PATH}\\*.vhd) do (
-                        ${MODELSIM_PATH}\\vcom -2008 "%%f" || exit /b
+                    for %%f in (testbenches/*.vhd) do (
+                        ${MODELSIM_PATH}\\vcom -2008 %%f || exit /b
                     )
                     """
-                }
-            }
-        }
-
-        stage('Generate Testbench Makefile') {
-            steps {
-                script {
-                    // Generate makefile for testbenches
-                    bat "${MODELSIM_PATH}\\vmake -work work > testbench.vmake"
-                }
-            }
-        }
-
-        stage('Compile Testbenches with Makefile') {
-            steps {
-                script {
-                    // Compile testbenches using the generated makefile
-                    bat "make -f testbench.vmake"
                 }
             }
         }
@@ -95,10 +57,10 @@ pipeline {
         stage('Run Testbenches') {
             steps {
                 script {
-                    // Run all testbenches in the testbenches directory
+                    // Run all testbenches without changing directories
                     bat """
-                    for %%f in (${TESTBENCHES_PATH}\\*.vhd) do (
-                        ${MODELSIM_PATH}\\vsim -c -do "run %%~nf; exit;" || exit /b
+                    for %%f in (testbenches/*.vhd) do (
+                        ${MODELSIM_PATH}\\vsim -c -do "run -all; exit;" || exit /b
                     )
                     """
                 }
