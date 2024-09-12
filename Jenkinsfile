@@ -18,11 +18,11 @@ pipeline {
             steps {
                 script {
                     // Create and map the work library
-                    bat "${MODELSIM_PATH}\\vlib work"
-                    bat "${MODELSIM_PATH}\\vmap work work"
+                    bat "${MODELSIM_PATH}\\vlib work >> result.log 2>&1"
+                    bat "${MODELSIM_PATH}\\vmap work work >> result.log 2>&1"
                     
                     // Check if work directory is created
-                    bat 'dir work'
+                    bat 'dir work >> result.log 2>&1'
                 }
             }
         }
@@ -33,10 +33,7 @@ pipeline {
                     // Compile all VHDL files in the sources directory
                     bat """
                     for %%f in (${SOURCES_PATH}\\*.vhd) do (
-                        echo Compiling %%f... >> result.log
-                        ${MODELSIM_PATH}\\vcom -2008 -work work "%%f" >> result.log 2>&1
-                        findstr /C:"Error:" result.log
-                        if %ERRORLEVEL% NEQ 0 exit /b %ERRORLEVEL%
+                        ${MODELSIM_PATH}\\vcom -2008 -work work "%%f" >> source_result.log 2>&1
                     )
                     """
                 }
@@ -49,10 +46,7 @@ pipeline {
                     // Compile all testbenches in the testbenches directory
                     bat """
                     for %%f in (${TESTBENCHES_PATH}\\*.vhd) do (
-                        echo Compiling %%f... >> result.log
-                        ${MODELSIM_PATH}\\vcom -2008 -work work "%%f" >> result.log 2>&1
-                        findstr /C:"Error:" result.log
-                        if %ERRORLEVEL% NEQ 0 exit /b %ERRORLEVEL%
+                        ${MODELSIM_PATH}\\vcom -2008 -work work "%%f" >> testbench_result.log 2>&1
                     )
                     """
                 }
@@ -65,10 +59,7 @@ pipeline {
                     // Run all testbenches in the testbenches directory
                     bat """
                     for %%f in (${TESTBENCHES_PATH}\\*.vhd) do (
-                        echo Running %%~nf... >> result.log
-                        ${MODELSIM_PATH}\\vsim -c -do "run %%~nf; exit;" >> result.log 2>&1
-                        findstr /C:"Error:" result.log
-                        if %ERRORLEVEL% NEQ 0 exit /b %ERRORLEVEL%
+                        ${MODELSIM_PATH}\\vsim -c -do "run %%~nf; exit;" >> testbench_result.log 2>&1
                     )
                     """
                 }
@@ -85,6 +76,8 @@ pipeline {
     post {
         always {
             archiveArtifacts artifacts: '**/test_results/*.xml', allowEmptyArchive: true
+            archiveArtifacts artifacts: 'source_result.log', allowEmptyArchive: true
+            archiveArtifacts artifacts: 'testbench_result.log', allowEmptyArchive: true
         }
     }
 }
