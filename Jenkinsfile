@@ -69,4 +69,16 @@ pipeline {
 
         stage('Publish Results') {
             steps {
-                junit '**/test_res
+                junit '**/test_results/*.xml'
+            }
+        }
+    }
+
+    post {
+        always {
+            archiveArtifacts artifacts: '**/test_results/*.xml', allowEmptyArchive: true
+            archiveArtifacts artifacts: 'source_result.log', allowEmptyArchive: true
+            archiveArtifacts artifacts: 'testbench_result.log', allowEmptyArchive: true
+        }
+    }
+}
