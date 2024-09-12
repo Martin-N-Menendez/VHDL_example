@@ -18,12 +18,15 @@ pipeline {
         stage('Setup Work Library') {
             steps {
                 script {
+                    // Remove existing work library if it exists
+                    bat "if exist ${WORK_PATH} rmdir /s /q ${WORK_PATH}"
+                    
                     // Create and map the work library
                     bat "${MODELSIM_PATH}\\vlib ${WORK_PATH} >> result.log 2>&1"
                     bat "${MODELSIM_PATH}\\vmap work ${WORK_PATH} >> result.log 2>&1"
                     
                     // Check if work directory is created
-                    bat 'dir ${WORK_PATH} >> result.log 2>&1'
+                    bat "dir ${WORK_PATH} >> result.log 2>&1"
                 }
             }
         }
