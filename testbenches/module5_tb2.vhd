@@ -10,7 +10,7 @@ architecture Behavioral of module5_tb2 is
     signal A, B : STD_LOGIC_VECTOR(3 downto 0);
     signal SUM : STD_LOGIC_VECTOR(3 downto 0);
 begin
-    uut: entity work.module5
+    uut: entity module5
         port map (
             A => A,
             B => B,
