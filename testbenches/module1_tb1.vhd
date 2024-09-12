@@ -10,7 +10,7 @@ architecture Behavioral of module1_tb1 is
     signal A, B : STD_LOGIC_VECTOR(3 downto 0);
     signal SUM : STD_LOGIC_VECTOR(3 downto 0);
 begin
-    uut: entity module1
+    uut: entity work.module1
         port map (
             A => A,
             B => B,
