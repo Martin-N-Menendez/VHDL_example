@@ -9,7 +9,7 @@ entity module4 is
            SUM : out  STD_LOGIC_VECTOR (3 downto 0));
 end module4;
 
-architecture Behavioral of module2 is
+architecture Behavioral of module4 is
 begin
     SUM <= A + B;
 end Behavioral;
