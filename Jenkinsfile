@@ -6,6 +6,7 @@ pipeline {
         SOURCES_PATH = 'C:\\ProgramData\\Jenkins\\.jenkins\\workspace\\Testing\\source'
         TESTBENCHES_PATH = 'C:\\ProgramData\\Jenkins\\.jenkins\\workspace\\Testing\\testbenches'
         WORK_PATH = 'C:\\ProgramData\\Jenkins\\.jenkins\\workspace\\Testing\\work'
+        RESULTS_PATH = 'C:\\ProgramData\\Jenkins\\.jenkins\\workspace\\Testing\\results'
     }
 
     stages {
