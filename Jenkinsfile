@@ -63,7 +63,8 @@ pipeline {
                     // Run all testbenches in the testbenches directory
                     bat """
                     for %%f in (${TESTBENCHES_PATH}\\*.vhd) do (
-                        ${MODELSIM_PATH}\\vsim -c -do "run %%~nf; exit;" >> testbench_result.log 2>&1
+                        echo Running testbench: %%~nf
+                        ${MODELSIM_PATH}\\vsim -c -do "run -all; exit;" work.%%~nf >> testbench_result.log 2>&1
                     )
                     """
                 }
