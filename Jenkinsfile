@@ -17,9 +17,6 @@ pipeline {
         stage('Setup Work Library') {
             steps {
                 script {
-                    // Print the environment path to ensure ModelSim path is correct
-                    echo "ModelSim path: ${MODELSIM_PATH}"
-
                     // Create and map the work library
                     bat "${MODELSIM_PATH}\\vlib work"
                     bat "${MODELSIM_PATH}\\vmap work work"
