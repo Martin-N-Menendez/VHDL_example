@@ -15,13 +15,33 @@ pipeline {
         
         stage('Compile VHDL Files') {
             steps {
-                dir('scripts') {
+                dir('sources') {
                     script {
-                        // Add ModelSim path to system PATH
-                        withEnv(["PATH+MODELSIM=${env.MODELSIM_PATH}"]) {
-                            // Run compile.tcl using ModelSim's vsim
-                            bat '"vsim" -c -do "do compile.tcl; exit"'
-                        }
+                        // Create the work library
+                        bat "${MODELSIM_PATH}\\vlib work"
+                        bat "${MODELSIM_PATH}\\vmap work work"
+
+                        // Compile all VHDL files in the sources directory
+                        bat """
+                        for %f in (*.vhd) do (
+                            ${MODELSIM_PATH}\\vcom -2008 %f
+                        )
+                        """
+                    }
+                }
+            }
+        }
+
+        stage('Compile Testbenches') {
+            steps {
+                dir('testbenches') {
+                    script {
+                        // Compile all testbenches in the testbenches directory
+                        bat """
+                        for %f in (*.vhd) do (
+                            ${MODELSIM_PATH}\\vcom -2008 %f
+                        )
+                        """
                     }
                 }
             }
@@ -29,21 +49,21 @@ pipeline {
 
         stage('Run Testbenches') {
             steps {
-                dir('scripts') {
+                dir('testbenches') {
                     script {
-                        // Add ModelSim path to system PATH
-                        withEnv(["PATH+MODELSIM=${env.MODELSIM_PATH}"]) {
-                            // Run testbenches using ModelSim's vsim
-                            bat '"vsim" -c -do "do run_testbenches.tcl; exit"'
-                        }
+                        // Run all testbenches in the testbenches directory
+                        bat """
+                        for %f in (*.vhd) do (
+                            ${MODELSIM_PATH}\\vsim -c -do "run %~nf; exit;"
+                        )
+                        """
                     }
                 }
             }
         }
-        
+
         stage('Publish Results') {
             steps {
-                // Assuming you're generating results in JUnit XML format
                 junit '**/test_results/*.xml'
             }
         }
