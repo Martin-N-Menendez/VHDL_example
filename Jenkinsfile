@@ -33,7 +33,10 @@ pipeline {
                     // Compile all VHDL files in the sources directory
                     bat """
                     for %%f in (${SOURCES_PATH}\\*.vhd) do (
-                        ${MODELSIM_PATH}\\vcom -2008 -work work "%%f" || exit /b
+                        echo Compiling %%f...
+                        ${MODELSIM_PATH}\\vcom -2008 -work work "%%f" > result.log 2>&1
+                        findstr /C:"Error:" result.log
+                        if %ERRORLEVEL% NEQ 0 exit /b %ERRORLEVEL%
                     )
                     """
                 }
@@ -46,7 +49,10 @@ pipeline {
                     // Compile all testbenches in the testbenches directory
                     bat """
                     for %%f in (${TESTBENCHES_PATH}\\*.vhd) do (
-                        ${MODELSIM_PATH}\\vcom -2008 -work work "%%f" || exit /b
+                        echo Compiling %%f...
+                        ${MODELSIM_PATH}\\vcom -2008 -work work "%%f" > result.log 2>&1
+                        findstr /C:"Error:" result.log
+                        if %ERRORLEVEL% NEQ 0 exit /b %ERRORLEVEL%
                     )
                     """
                 }
@@ -59,7 +65,10 @@ pipeline {
                     // Run all testbenches in the testbenches directory
                     bat """
                     for %%f in (${TESTBENCHES_PATH}\\*.vhd) do (
-                        ${MODELSIM_PATH}\\vsim -c -do "run %%~nf; exit;" || exit /b
+                        echo Running %%~nf...
+                        ${MODELSIM_PATH}\\vsim -c -do "run %%~nf; exit;" > result.log 2>&1
+                        findstr /C:"Error:" result.log
+                        if %ERRORLEVEL% NEQ 0 exit /b %ERRORLEVEL%
                     )
                     """
                 }
