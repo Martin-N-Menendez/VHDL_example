@@ -102,7 +102,7 @@ pipeline {
             archiveArtifacts artifacts: 'source_result.log', allowEmptyArchive: true
             archiveArtifacts artifacts: 'testbench_result.log', allowEmptyArchive: true
             archiveArtifacts artifacts: 'run_testbench_result.log', allowEmptyArchive: true
-            archiveArtifacts artifacts: 'results/test_results.xml', allowEmptyArchive: true
+            archiveArtifacts artifacts: 'test_results.xml', allowEmptyArchive: true
         }
     }
 }
