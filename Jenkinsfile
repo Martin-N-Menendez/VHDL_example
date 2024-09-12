@@ -39,8 +39,9 @@ pipeline {
                     bat """
                     echo Compiling VHDL files...
                     for %%f in (${SOURCES_PATH}\\*.vhd) do (
-                        echo ${MODELSIM_PATH}\\vcom -2008 -work work "%%f"
-                        ${MODELSIM_PATH}\\vcom -2008 -work work "%%f" || exit /b
+                        set CMD=${MODELSIM_PATH}\\vcom -2008 -work work "%%f"
+                        echo Executing !CMD!
+                        !CMD! || exit /b
                     )
                     """
                 }
@@ -54,8 +55,9 @@ pipeline {
                     bat """
                     echo Compiling testbenches...
                     for %%f in (${TESTBENCHES_PATH}\\*.vhd) do (
-                        echo ${MODELSIM_PATH}\\vcom -2008 -work work "%%f"
-                        ${MODELSIM_PATH}\\vcom -2008 -work work "%%f" || exit /b
+                        set CMD=${MODELSIM_PATH}\\vcom -2008 -work work "%%f"
+                        echo Executing !CMD!
+                        !CMD! || exit /b
                     )
                     """
                 }
@@ -69,8 +71,9 @@ pipeline {
                     bat """
                     echo Running testbenches...
                     for %%f in (${TESTBENCHES_PATH}\\*.vhd) do (
-                        echo ${MODELSIM_PATH}\\vsim -c -do "run %%~nf; exit;"
-                        ${MODELSIM_PATH}\\vsim -c -do "run %%~nf; exit;" || exit /b
+                        set CMD=${MODELSIM_PATH}\\vsim -c -do "run %%~nf; exit;"
+                        echo Executing !CMD!
+                        !CMD! || exit /b
                     )
                     """
                 }
