@@ -46,11 +46,14 @@ pipeline {
         stage('Compile Testbenches') {
             steps {
                 script {
-                    // Compile all testbenches in the testbenches directory
+                    // Use vmake to generate makefile for testbenches
                     bat """
-                    for %%f in (${TESTBENCHES_PATH}\\*.vhd) do (
-                        ${MODELSIM_PATH}\\vcom -2008 "%%f" || exit /b
-                    )
+                    ${MODELSIM_PATH}\\vmake -work work > testbenches.vmake
+                    """
+                    
+                    // Compile all testbenches using the generated makefile
+                    bat """
+                    ${MODELSIM_PATH}\\make -f testbenches.vmake || exit /b
                     """
                 }
             }
