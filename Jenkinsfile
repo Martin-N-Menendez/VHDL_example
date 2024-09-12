@@ -36,7 +36,7 @@ pipeline {
                     // Compile all VHDL files in the sources directory
                     bat """
                     for %%f in (${SOURCES_PATH}\\*.vhd) do (
-                        ${MODELSIM_PATH}\\vcom -2008 "%%f" || exit /b
+                        ${MODELSIM_PATH}\\vcom -2008 -work work "%%f" || exit /b
                     )
                     """
                 }
@@ -49,7 +49,7 @@ pipeline {
                     // Compile all testbenches in the testbenches directory
                     bat """
                     for %%f in (${TESTBENCHES_PATH}\\*.vhd) do (
-                        ${MODELSIM_PATH}\\vcom -2008 "%%f" || exit /b
+                        ${MODELSIM_PATH}\\vcom -2008 -work work "%%f" || exit /b
                     )
                     """
                 }
