@@ -84,7 +84,16 @@ pipeline {
 
         stage('Publish Results') {
             steps {
-                junit '**/test_results/*.xml'
+                script {
+                    // Collect and archive the test results
+                    def testResults = findFiles(glob: '**/test_results/*.xml')
+                    if (testResults.length > 0) {
+                        archiveArtifacts artifacts: '**/test_results/*.xml', allowEmptyArchive: true
+                        junit '**/test_results/*.xml'
+                    } else {
+                        echo 'No test result files found.'
+                    }
+                }
             }
         }
     }
