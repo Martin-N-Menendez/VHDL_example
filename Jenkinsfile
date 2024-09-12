@@ -50,7 +50,10 @@ pipeline {
                         // Compile all testbenches in the testbenches directory
                         bat """
                         for %%f in (*.vhd) do (
-                            ${MODELSIM_PATH}\\vcom -2008 %%f || exit /b
+                            ${MODELSIM_PATH}\\vcom -2008 %f > compile.log 2>&1 || (
+                                echo Compilation failed for %f, displaying log:
+                                type compile.log
+                                exit /b
                         )
                         """
                     }
