@@ -1,32 +1,39 @@
-import sys
-import os
-from xml.etree.ElementTree import Element, SubElement, tostring, ElementTree
+import xml.etree.ElementTree as ET
 
-def parse_log_to_xml(log_file, xml_file):
-    # Create the root XML element
-    testsuite = Element('testsuite', name='TestSuite', tests='0', failures='0', errors='0')
-    
+def parse_log(log_file):
+    test_cases = []
     with open(log_file, 'r') as file:
         lines = file.readlines()
-        test_count = 0
-        for line in lines:
-            if "Test Passed" in line:
-                test_count += 1
-                testcase = SubElement(testsuite, 'testcase', name=f'Test{test_count}')
-                # Add additional test result details here if needed
-            elif "Test Failed" in line:
-                testcase = SubElement(testsuite, 'testcase', name=f'Test{test_count}')
-                SubElement(testcase, 'failure', message='Test failed')
+        for i, line in enumerate(lines):
+            # Look for the start of a testbench simulation
+            if 'vsim -c -do' in line and '-lib work' in line:
+                test_case_name = line.split()[-1].strip('"')
+                errors = 0
+                warnings = 0
+                # Scan for errors and warnings within this testbench block
+                for j in range(i, len(lines)):
+                    if 'Errors' in lines[j]:
+                        errors = int(lines[j].split()[-2])  # Extract the number of errors
+                    if 'Warnings' in lines[j]:
+                        warnings = int(lines[j].split()[-2])  # Extract the number of warnings
+                    if 'exit' in lines[j]:  # End of this test case block
+                        break
+                test_cases.append((test_case_name, errors, warnings))
+    return test_cases
 
-    # Write XML to file
-    tree = ElementTree(testsuite)
-    tree.write(xml_file, encoding='utf-8', xml_declaration=True)
+def generate_junit_xml(test_cases, output_file):
+    testsuite = ET.Element('testsuite', name='TestSuite', tests=str(len(test_cases)))
+    for name, errors, warnings in test_cases:
+        testcase = ET.SubElement(testsuite, 'testcase', classname=name, name=name)
+        if errors > 0:
+            ET.SubElement(testcase, 'error', message=f'{errors} errors', type="Error")
+        if warnings > 0:
+            ET.SubElement(testcase, 'failure', message=f'{warnings} warnings', type="Warning")
+    tree = ET.ElementTree(testsuite)
+    tree.write(output_file, encoding='utf-8', xml_declaration=True)
 
-if __name__ == "__main__":
-    if len(sys.argv) != 3:
-        print("Usage: python convert_to_junit_xml.py <log_file> <xml_file>")
-        sys.exit(1)
-
-    log_file = sys.argv[1]
-    xml_file = sys.argv[2]
-    parse_log_to_xml(log_file, xml_file)
+if __name__ == '__main__':
+    log_file = 'run_testbench_result.log'
+    output_file = 'test_results.xml'
+    test_cases = parse_log(log_file)
+    generate_junit_xml(test_cases, output_file)
