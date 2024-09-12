@@ -10,7 +10,6 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                echo "Checking out code from Git repository..."
                 git branch: 'main', url: 'https://github.com/Martin-N-Menendez/VHDL_example.git'
             }
         }
@@ -18,16 +17,15 @@ pipeline {
         stage('Setup Work Library') {
             steps {
                 script {
+                    // Print the environment path to ensure ModelSim path is correct
                     echo "ModelSim path: ${MODELSIM_PATH}"
 
-                    echo "Creating work library..."
-                    bat "echo ${MODELSIM_PATH}\\vlib work && ${MODELSIM_PATH}\\vlib work"
-
-                    echo "Mapping work library..."
-                    bat "echo ${MODELSIM_PATH}\\vmap work work && ${MODELSIM_PATH}\\vmap work work"
+                    // Create and map the work library
+                    bat "${MODELSIM_PATH}\\vlib work"
+                    bat "${MODELSIM_PATH}\\vmap work work"
                     
-                    echo "Checking work directory..."
-                    bat "dir work"
+                    // Check if work directory is created
+                    bat 'dir work'
                 }
             }
         }
@@ -35,13 +33,10 @@ pipeline {
         stage('Compile VHDL Files') {
             steps {
                 script {
-                    echo "Compiling VHDL files in sources directory..."
+                    // Compile all VHDL files in the sources directory
                     bat """
-                    echo Compiling VHDL files...
                     for %%f in (${SOURCES_PATH}\\*.vhd) do (
-                        set CMD=${MODELSIM_PATH}\\vcom -2008 -work work "%%f"
-                        echo Executing !CMD!
-                        !CMD! || exit /b
+                        ${MODELSIM_PATH}\\vcom -2008 -work work "%%f" || exit /b
                     )
                     """
                 }
@@ -51,13 +46,10 @@ pipeline {
         stage('Compile Testbenches') {
             steps {
                 script {
-                    echo "Compiling testbenches in testbenches directory..."
+                    // Compile all testbenches in the testbenches directory
                     bat """
-                    echo Compiling testbenches...
                     for %%f in (${TESTBENCHES_PATH}\\*.vhd) do (
-                        set CMD=${MODELSIM_PATH}\\vcom -2008 -work work "%%f"
-                        echo Executing !CMD!
-                        !CMD! || exit /b
+                        ${MODELSIM_PATH}\\vcom -2008 -work work "%%f" || exit /b
                     )
                     """
                 }
@@ -67,13 +59,10 @@ pipeline {
         stage('Run Testbenches') {
             steps {
                 script {
-                    echo "Running testbenches in testbenches directory..."
+                    // Run all testbenches in the testbenches directory
                     bat """
-                    echo Running testbenches...
                     for %%f in (${TESTBENCHES_PATH}\\*.vhd) do (
-                        set CMD=${MODELSIM_PATH}\\vsim -c -do "run %%~nf; exit;"
-                        echo Executing !CMD!
-                        !CMD! || exit /b
+                        ${MODELSIM_PATH}\\vsim -c -do "run %%~nf; exit;" || exit /b
                     )
                     """
                 }
@@ -82,7 +71,6 @@ pipeline {
 
         stage('Publish Results') {
             steps {
-                echo "Publishing test results..."
                 junit '**/test_results/*.xml'
             }
         }
@@ -90,7 +78,6 @@ pipeline {
 
     post {
         always {
-            echo "Archiving test results..."
             archiveArtifacts artifacts: '**/test_results/*.xml', allowEmptyArchive: true
         }
     }
