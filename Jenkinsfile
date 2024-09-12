@@ -35,9 +35,10 @@ pipeline {
                         // Compile all VHDL files in the sources directory
                         bat """
                         for %%f in (*.vhd) do (
-                            ${MODELSIM_PATH}\\vcom -2008 %%f || exit /b
+                        ${MODELSIM_PATH}\\vcom -2008 %%f > 2>&1 | tee compile_log.txt || exit /b
                         )
                         """
+                        bat 'type compile1_log.txt' // Display the content of the log file in the Jenkins console
                     }
                 }
             }
@@ -53,7 +54,7 @@ pipeline {
                             ${MODELSIM_PATH}\\vcom -2008 %%f > 2>&1 | tee compile_log.txt || exit /b
                             )
                              """
-                            bat 'type compile_log.txt' // Display the content of the log file in the Jenkins console
+                            bat 'type compile2_log.txt' // Display the content of the log file in the Jenkins console
                     }
                 }
             }
