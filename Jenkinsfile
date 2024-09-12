@@ -18,6 +18,7 @@ pipeline {
                     // Print the environment path to ensure ModelSim path is correct
                     echo "ModelSim path: ${MODELSIM_PATH}"
 
+                    bat 'rmdir /S /Q work' // Delete work directory if it exists
                     // Create and map the work library
                     bat "${MODELSIM_PATH}/vlib work"
                     bat "${MODELSIM_PATH}/vmap work work"
