@@ -3,6 +3,8 @@ pipeline {
 
     environment {
         MODELSIM_PATH = 'C:\\intelFPGA\\18.1\\modelsim_ase\\win32aloem'
+        SOURCES_PATH = 'C:\\ProgramData\\Jenkins\\.jenkins\\workspace\\Testing\\sources'
+        TESTBENCHES_PATH = 'C:\\ProgramData\\Jenkins\\.jenkins\\workspace\\Testing\\testbenches'
     }
 
     stages {
@@ -28,13 +30,13 @@ pipeline {
             }
         }
 
-        stage('Compile Sources') {
+        stage('Compile VHDL Files') {
             steps {
                 script {
-                    // Compile all source files without changing directories
+                    // Compile all VHDL files in the sources directory
                     bat """
-                    for %%f in (sources/*.vhd) do (
-                        ${MODELSIM_PATH}\\vcom -2008 %%f || exit /b
+                    for %%f in (${SOURCES_PATH}\\*.vhd) do (
+                        ${MODELSIM_PATH}\\vcom -2008 "%%f" || exit /b
                     )
                     """
                 }
@@ -44,10 +46,10 @@ pipeline {
         stage('Compile Testbenches') {
             steps {
                 script {
-                    // Compile all testbenches without changing directories
+                    // Compile all testbenches in the testbenches directory
                     bat """
-                    for %%f in (testbenches/*.vhd) do (
-                        ${MODELSIM_PATH}\\vcom -2008 %%f || exit /b
+                    for %%f in (${TESTBENCHES_PATH}\\*.vhd) do (
+                        ${MODELSIM_PATH}\\vcom -2008 "%%f" || exit /b
                     )
                     """
                 }
@@ -57,10 +59,10 @@ pipeline {
         stage('Run Testbenches') {
             steps {
                 script {
-                    // Run all testbenches without changing directories
+                    // Run all testbenches in the testbenches directory
                     bat """
-                    for %%f in (testbenches/*.vhd) do (
-                        ${MODELSIM_PATH}\\vsim -c -do "run -all; exit;" || exit /b
+                    for %%f in (${TESTBENCHES_PATH}\\*.vhd) do (
+                        ${MODELSIM_PATH}\\vsim -c -do "run %%~nf; exit;" || exit /b
                     )
                     """
                 }
