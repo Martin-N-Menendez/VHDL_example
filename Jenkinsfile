@@ -1,8 +1,10 @@
 pipeline {
     agent any
 
-    environment {
-        MODELSIM_PATH = 'C:/intelFPGA/18.1/modelsim_ase/win32aloem'
+     environment {
+        MODELSIM_PATH = 'C:\\intelFPGA\\18.1\\modelsim_ase\\win32aloem'
+        SOURCES_PATH = 'C:\\ProgramData\\Jenkins\\.jenkins\\workspace\\Testing\\sources'
+        TESTBENCHES_PATH = 'C:\\ProgramData\\Jenkins\\.jenkins\\workspace\\Testing\\testbenches'
     }
 
     stages {
@@ -31,47 +33,39 @@ pipeline {
 
         stage('Compile VHDL Files') {
             steps {
-                dir('source') {
-                    script {
-                        // Compile all VHDL files in the sources directory and log the output
-                        bat """
-                        for %%f in (*.vhd) do (
-                            ${MODELSIM_PATH}/vcom -2008 %%f >> compile1_log.txt 2>&1 || exit /b
-                        )
-                        """
-                        bat 'type compile1_log.txt' // Display the content of the log file in the Jenkins console
-                    }
+                script {
+                    // Compile all VHDL files in the sources directory
+                    bat """
+                    for %%f in (${SOURCES_PATH}/*.vhd) do (
+                        ${MODELSIM_PATH}/vcom -2008 %%f || exit /b
+                    )
+                    """
                 }
             }
         }
         
         stage('Compile Testbenches') {
             steps {
-                dir('testbenches') {
-                    script {
-                        // Compile all testbenches in the testbenches directory and log the output
-                        bat """
-                        for %%f in (*.vhd) do (
-                            ${MODELSIM_PATH}/vcom -2008 %%f >> compile2_log.txt 2>&1 || exit /b
-                        )
-                        """
-                        bat 'type compile2_log.txt' // Display the content of the log file in the Jenkins console
-                    }
+                script {
+                    // Compile all testbenches in the testbenches directory
+                    bat """
+                    for %%f in (${TESTBENCHES_PATH}/*.vhd) do (
+                        ${MODELSIM_PATH}/vcom -2008 %%f || exit /b
+                    )
+                    """
                 }
             }
         }
 
         stage('Run Testbenches') {
             steps {
-                dir('testbenches') {
-                    script {
-                        // Run all testbenches in the testbenches directory
-                        bat """
-                        for %%f in (*.vhd) do (
-                            ${MODELSIM_PATH}/vsim -c -do "run %%~nf; exit;" || exit /b
-                        )
-                        """
-                    }
+                script {
+                    // Run all testbenches in the testbenches directory
+                    bat """
+                    for %%f in (${TESTBENCHES_PATH}/*.vhd) do (
+                        ${MODELSIM_PATH}/vsim -c -do "run %%~nf; exit;" || exit /b
+                    )
+                    """
                 }
             }
         }
