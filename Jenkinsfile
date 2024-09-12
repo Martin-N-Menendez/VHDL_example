@@ -5,6 +5,7 @@ pipeline {
         MODELSIM_PATH = 'C:\\intelFPGA\\18.1\\modelsim_ase\\win32aloem'
         SOURCES_PATH = 'C:\\ProgramData\\Jenkins\\.jenkins\\workspace\\Testing\\source'
         TESTBENCHES_PATH = 'C:\\ProgramData\\Jenkins\\.jenkins\\workspace\\Testing\\testbenches'
+        WORK_PATH = 'C:\\ProgramData\\Jenkins\\.jenkins\\workspace\\Testing\\work'
     }
 
     stages {
@@ -31,7 +32,7 @@ pipeline {
                 script {
                     // Create and map the work library
                     bat "${MODELSIM_PATH}\\vlib work >> result.log 2>&1"
-                    bat "${MODELSIM_PATH}\\vmap work work >> result.log 2>&1"
+                    bat "${MODELSIM_PATH}\\vmap work ${WORK_PATH} >> result.log 2>&1"
                     
                     // Check if work directory is created
                     bat 'dir work >> result.log 2>&1'
@@ -73,8 +74,8 @@ pipeline {
                     // Run all testbenches in the testbenches directory
                     bat """
                     for %%f in (${TESTBENCHES_PATH}\\*.vhd) do (
-                        echo ${MODELSIM_PATH}\\vsim -c -do "run %%~nf; exit;" >> run_testbench_result.log 2>&1
-                        ${MODELSIM_PATH}\\vsim -c -do "run %%~nf; exit;" >> run_testbench_result.log 2>&1
+                        echo ${MODELSIM_PATH}\\vsim -c -do "run -all; exit;" -lib work "%%~nf" >> run_testbench_result.log 2>&1
+                        ${MODELSIM_PATH}\\vsim -c -do "run -all; exit;" -lib work "%%~nf" >> run_testbench_result.log 2>&1
                     )
                     """
                 }
