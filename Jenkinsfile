@@ -2,9 +2,9 @@ pipeline {
     agent any
 
      environment {
-        MODELSIM_PATH = 'C:\\intelFPGA\\18.1\\modelsim_ase\\win32aloem'
-        SOURCES_PATH = 'C:\\ProgramData\\Jenkins\\.jenkins\\workspace\\Testing\\sources'
-        TESTBENCHES_PATH = 'C:\\ProgramData\\Jenkins\\.jenkins\\workspace\\Testing\\testbenches'
+        MODELSIM_PATH = 'C:/intelFPGA/18.1/modelsim_ase/win32aloem'
+        SOURCES_PATH = 'C:/ProgramData/Jenkins/.jenkins/workspace/Testing/sources'
+        TESTBENCHES_PATH = 'C:/ProgramData/Jenkins/.jenkins/workspace/Testing/testbenches'
     }
 
     stages {
