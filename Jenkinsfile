@@ -6,7 +6,6 @@ pipeline {
         SOURCES_PATH = 'C:\\ProgramData\\Jenkins\\.jenkins\\workspace\\Testing\\source'
         TESTBENCHES_PATH = 'C:\\ProgramData\\Jenkins\\.jenkins\\workspace\\Testing\\testbenches'
         WORK_PATH = 'C:\\ProgramData\\Jenkins\\.jenkins\\workspace\\Testing\\work'
-        RESULTS_PATH = 'C:\\ProgramData\\Jenkins\\.jenkins\\workspace\\Testing\\results'
     }
 
     stages {
@@ -86,14 +85,14 @@ pipeline {
         stage('Convert Results to XML') {
             steps {
                 script {
-                    bat "python convert_to_junit_xml.py run_testbench_result.log ${RESULTS_PATH}\\test_results.xml"
+                    bat "python convert_to_junit_xml.py run_testbench_result.log test_results.xml"
                 }
             }
         }
 
         stage('Publish Results') {
             steps {
-                junit '**/results/test_results.xml'
+                junit '**/test_results.xml'
             }
         }
     }
