@@ -32,10 +32,10 @@ pipeline {
             steps {
                 dir('source') {
                     script {
-                        // Compile all VHDL files in the sources directory
+                        // Compile all VHDL files in the sources directory and log the output
                         bat """
                         for %%f in (*.vhd) do (
-                        ${MODELSIM_PATH}\\vcom -2008 %%f > 2>&1 | tee compile_log.txt || exit /b
+                            ${MODELSIM_PATH}\\vcom -2008 %%f >> compile1_log.txt 2>&1 || exit /b
                         )
                         """
                         bat 'type compile1_log.txt' // Display the content of the log file in the Jenkins console
@@ -43,18 +43,18 @@ pipeline {
                 }
             }
         }
-
+        
         stage('Compile Testbenches') {
             steps {
                 dir('testbenches') {
                     script {
-                        // Compile all testbenches in the testbenches directory
+                        // Compile all testbenches in the testbenches directory and log the output
                         bat """
                         for %%f in (*.vhd) do (
-                            ${MODELSIM_PATH}\\vcom -2008 %%f > 2>&1 | tee compile_log.txt || exit /b
-                            )
-                             """
-                            bat 'type compile2_log.txt' // Display the content of the log file in the Jenkins console
+                            ${MODELSIM_PATH}\\vcom -2008 %%f >> compile2_log.txt 2>&1 || exit /b
+                        )
+                        """
+                        bat 'type compile2_log.txt' // Display the content of the log file in the Jenkins console
                     }
                 }
             }
