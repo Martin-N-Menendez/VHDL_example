@@ -82,22 +82,21 @@ pipeline {
             }
         }
 
-        stage('Publish Results') {
+         stage('Publish Results') {
             steps {
                 script {
-                    // Collect and archive the test results
-                    def testResults = findFiles(glob: '**/test_results/*.xml')
-                    if (testResults.length > 0) {
-                        archiveArtifacts artifacts: '**/test_results/*.xml', allowEmptyArchive: true
-                        junit '**/test_results/*.xml'
+                    // Check for XML results
+                    def resultFiles = sh(returnStdout: true, script: 'dir /s /b results\\*.xml').trim()
+                    if (resultFiles) {
+                        archiveArtifacts artifacts: 'results/*.xml', allowEmptyArchive: true
+                        junit 'results/*.xml'
                     } else {
-                        echo 'No test result files found.'
+                        echo 'No test result files found. Check if testbenches are generating XML results.'
                     }
                 }
             }
         }
     }
-
     post {
         always {
             archiveArtifacts artifacts: '**/test_results/*.xml', allowEmptyArchive: true
